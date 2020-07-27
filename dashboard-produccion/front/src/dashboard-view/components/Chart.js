@@ -45,6 +45,16 @@ function Chart(props) {
     const setInterval = props.setInterval;
     const chart = useRef(null);
 
+    const radioStyle = makeStyles(() => ({
+        radio: {
+            '&$checked': {
+                color: background
+            }
+        },
+        checked: {}
+    }));
+    const radioClasses = radioStyle();
+
     useLayoutEffect(() => {
         let new_chart = am4core.create('chartdiv', am4charts.XYChart);
         new_chart.language.locale = am4lang_es_ES;
@@ -152,8 +162,8 @@ function Chart(props) {
                                             setInterval(parseInt(e.target.value));
                                         }}
                                     >
-                                        <FormControlLabel value={0} control={<Radio color='primary' />} label='Días' />
-                                        <FormControlLabel value={1} control={<Radio color='primary' />} label='Horas' />
+                                        <FormControlLabel value={0} control={<Radio classes={{ root: radioClasses.radio, checked: radioClasses.checked }} color='primary' />} label='Días' />
+                                        <FormControlLabel value={1} control={<Radio classes={{ root: radioClasses.radio, checked: radioClasses.checked }} color='primary' />} label='Horas' />
                                     </RadioGroup>
                                 </Grid>
                             </Grid>
