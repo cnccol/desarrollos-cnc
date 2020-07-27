@@ -50,15 +50,16 @@ function Dashboard() {
     const [startDate, startDateChange] = useState(new Date());
     const [endDate, endDateChange] = useState(new Date());
     const indicators = [
-        { title: 'Total de llamadas realizadas 1', content: '10.000' },
-        { title: 'Total de llamadas realizadas 2', content: '2.000' },
-        { title: 'Total de llamadas realizadas 3', content: '1.500' },
-        { title: 'Total de llamadas realizadas 4', content: '800' },
-        { title: 'Total de llamadas realizadas 5', content: '600' },
-        { title: 'Total de llamadas realizadas 6', content: '200' }
+        { title: 'Total de llamadas realizadas', content: '10.000', background: '#1976D2' },
+        { title: 'Total de llamadas que pasan filtro', content: '2.000', background: '#F57C00' },
+        { title: 'Total de llamadas efectivas', content: '1.500', background: '#388E3C' },
+        { title: 'Total de llamadas rechazadas', content: '800', background: '#D32F2F' },
+        { title: 'Total de tiempo en llamadas', content: '600', background: '#0097A7' },
+        { title: 'Total de encuestas efectivas', content: '200', background: '#5D4037' }
     ];
     const [indicator, setIndicator] = useState(0);
     const [view, setView] = useState(0);
+    const [interval, setInterval] = useState(0);
 
     return (
         <div className='Dashboard'>
@@ -98,9 +99,11 @@ function Dashboard() {
                     </Grid>
                     <Grid item>
                         <Chart
-                            theme={theme}
-                            data={data[indicator]}
                             title={indicators[indicator].title}
+                            data={data[indicator]}
+                            background={indicators[indicator].background}
+                            interval={interval}
+                            setInterval={setInterval}
                         />
                     </Grid>
                 </Grid>

@@ -5,6 +5,7 @@ import {
 } from '@material-ui/core';
 import CallIcon from '@material-ui/icons/Call';
 import CheckIcon from '@material-ui/icons/Check';
+import AccessTimeIcon from '@material-ui/icons/AccessTime';
 
 function IndicatorsGrid(props) {
     const indicators = props.indicators;
@@ -25,7 +26,7 @@ function IndicatorsGrid(props) {
                             setIndicator={props.setIndicator}
                             title={indicators[0].title}
                             content={indicators[0].content}
-                            avatarBackground='#1976D2'
+                            avatarBackground={indicators[0].background}
                             icon={
                                 <CallIcon style={{
                                     height: 32,
@@ -41,7 +42,7 @@ function IndicatorsGrid(props) {
                             setIndicator={props.setIndicator}
                             title={indicators[1].title}
                             content={indicators[1].content}
-                            avatarBackground='#388E3C'
+                            avatarBackground={indicators[1].background}
                             icon={
                                 <CheckIcon style={{
                                     height: 42,
@@ -64,7 +65,7 @@ function IndicatorsGrid(props) {
                             setIndicator={props.setIndicator}
                             title={indicators[2].title}
                             content={indicators[2].content}
-                            avatarBackground='#1976D2'
+                            avatarBackground={indicators[2].background}
                             icon={
                                 <CallIcon style={{
                                     height: 32,
@@ -80,7 +81,7 @@ function IndicatorsGrid(props) {
                             setIndicator={props.setIndicator}
                             title={indicators[3].title}
                             content={indicators[3].content}
-                            avatarBackground='#1976D2'
+                            avatarBackground={indicators[3].background}
                             icon={
                                 <CallIcon style={{
                                     height: 32,
@@ -103,11 +104,11 @@ function IndicatorsGrid(props) {
                             setIndicator={props.setIndicator}
                             title={indicators[4].title}
                             content={indicators[4].content}
-                            avatarBackground='#1976D2'
+                            avatarBackground={indicators[4].background}
                             icon={
-                                <CallIcon style={{
-                                    height: 32,
-                                    width: 32,
+                                <AccessTimeIcon style={{
+                                    height: 40,
+                                    width: 40,
                                     fill: 'white'
                                 }} />
                             }
@@ -119,7 +120,7 @@ function IndicatorsGrid(props) {
                             setIndicator={props.setIndicator}
                             title={indicators[5].title}
                             content={indicators[5].content}
-                            avatarBackground='#1976D2'
+                            avatarBackground={indicators[5].background}
                             icon={
                                 <CallIcon style={{
                                     height: 32,

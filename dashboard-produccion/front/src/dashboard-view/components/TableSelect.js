@@ -9,9 +9,16 @@ import {
     FormControlLabel,
     RadioGroup,
     Radio,
-    Divider
+    Divider,
+    Collapse,
+    TextField,
+    InputAdornment,
+    IconButton
 } from '@material-ui/core';
+import SearchIcon from '@material-ui/icons/Search';
+import ClearIcon from '@material-ui/icons/Clear';
 import TableA from './TableA';
+import TableB from './TableB';
 
 const useStyles = makeStyles((theme) => ({
     cardTable: {
@@ -37,7 +44,10 @@ function TableSelect(props) {
     const view = props.view;
     const setView = props.setView;
     const rows = props.rows;
+    const rowsLength = rows.length;
     const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [changeView, setChangeView] = useState(true);
+    const [filter, setFilter] = useState('');
 
     return (
         <Card className={classes.cardTable} style={{ minHeight: 208 + 55.2 * Math.min(rowsPerPage, rows.length) }}>
@@ -54,26 +64,88 @@ function TableSelect(props) {
                             </Typography>
                         </Grid>
                         <Grid item>
-                            <Typography style={{ marginLeft: theme.spacing(10), marginRight: theme.spacing(2) }}>
-                                Seleccione la vista en la que desea consultar el consolidado:
-                            </Typography>
+                            <TextField
+                                value={filter}
+                                onChange={(e) => setFilter(e.target.value)}
+                                style={{ width: 300, marginLeft: theme.spacing(10), marginRight: theme.spacing(2) }}
+                                size='small'
+                                variant='outlined'
+                                placeholder='Buscar...'
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon style={{ color: 'rgba(0, 0, 0, 0.54)' }} />
+                                        </InputAdornment>
+                                    ),
+                                    endAdornment: filter !== '' ? (
+                                        < IconButton size='small' onClick={() => setFilter('')}>
+                                            <ClearIcon />
+                                        </IconButton>
+                                    ) : null
+                                }}
+                            />
                         </Grid>
-                        <Grid item>
-                            <RadioGroup value={view} onChange={(e) => setView(parseInt(e.target.value))} row>
-                                <FormControlLabel value={0} control={<Radio color='primary' />} label='Vista por encuestador' />
-                                <FormControlLabel value={1} control={<Radio color='primary' />} label='Vista por estudio' />
-                            </RadioGroup>
+                        <Grid item xs>
+                            <Grid
+                                container
+                                direction='row'
+                                alignItems='center'
+                                justify='flex-end'
+                            >
+                                <Grid item>
+                                    <Typography style={{ marginRight: theme.spacing(2) }}>
+                                        Seleccione la vista en la que desea consultar el consolidado:
+                                    </Typography>
+                                </Grid>
+                                <Grid item>
+                                    <RadioGroup
+                                        row
+                                        value={view}
+                                        onChange={(e) => {
+                                            let newView = e.target.value;
+                                            setChangeView(false);
+                                            setTimeout(() => {
+                                                setFilter('');
+                                                setView(parseInt(newView));
+                                                setChangeView(true);
+                                            }, 350);
+                                        }}
+                                    >
+                                        <FormControlLabel value={0} control={<Radio color='primary' />} label='Vista por encuestador' />
+                                        <FormControlLabel value={1} control={<Radio color='primary' />} label='Vista por estudio' />
+                                    </RadioGroup>
+                                </Grid>
+                            </Grid>
                         </Grid>
                     </Grid>
                 }
             />
             <Divider />
             <CardContent className={classes.cardTableContent}>
-                <TableA
-                    rows={rows}
-                    rowsPerPage={rowsPerPage}
-                    setRowsPerPage={setRowsPerPage}
-                />
+                <Collapse in={changeView}>
+                    {view === 0 ?
+                        <TableA
+                            rows={rows.filter(row => {
+                                return row.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes(filter.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+                            })}
+                            rowsLength={rowsLength}
+                            rowsPerPage={rowsPerPage}
+                            setRowsPerPage={setRowsPerPage}
+                            filter={filter}
+                        />
+
+                        :
+                        <TableB
+                            rows={rows.filter(row => {
+                                return row.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes(filter.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+                            })}
+                            rowsLength={rowsLength}
+                            rowsPerPage={rowsPerPage}
+                            setRowsPerPage={setRowsPerPage}
+                            filter={filter}
+                        />
+                    }
+                </Collapse>
             </CardContent>
         </Card>
     );
