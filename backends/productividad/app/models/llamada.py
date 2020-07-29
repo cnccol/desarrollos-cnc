@@ -1,22 +1,27 @@
+from enum import Enum
 from app import db
-from datetime import datetime
 
-class EncuestaModel(db.Model):
+class Estado(Enum):
+    COMPLETADA = 0
+    RECHAZADA = 1
+    INCOMPLETA = 2
 
-    __tablename__ = 'encuestas_test'
+class LlamadaModel(db.Model):
+
+
+    __tablename__ = 'llamadas_test'
 
     id = db.Column(db.Integer, primary_key=True)
     fecha_realizada = db.Column(db.DateTime, default=db.func.current_timestamp())
     estudio_id = db.Column(db.Integer, db.ForeignKey('estudios_test.id'))
     realizada_por = db.Column(db.Integer, db.ForeignKey('encuestadores_test.id'))
-    llamada_id = db.Column(db.Integer, db.ForeignKey('llamadas_test.id'))
+    encuesta = db.relationship('EncuestaModel',backref='llamada', cascade="all, delete-orphan")
 
-    def __init__(self, estudio, fecha, realizada_por, llamada):
+    def __init__(self, estudio, fecha, realizada_por):
         """Initialize the bucketlist with a name and its creator."""
         self.estudio_id = estudio
         self.fecha_realizada = fecha
         self.realizada_por = realizada_por
-        self.llamada_id = llamada
 
     def json(self):
         return {'fecha_realizada': self.fecha_realizada.strftime("%Y-%m-%d")}
