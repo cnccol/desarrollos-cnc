@@ -8,6 +8,7 @@ from app.config import postgresqlConfig
 
 app = Flask(__name__)
 
+app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = postgresqlConfig
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'Dese.Decent.Pups.BOOYO0OST'

@@ -2,7 +2,15 @@ from flask_restful import Resource, reqparse
 from app.models.gasto import GastoModel
 from flask_jwt import jwt_required
 from datetime import datetime
+import base64
+import uuid
 
+
+def saveImage(data, cedula):
+    name = f"{cedula}_{uuid.uuid4()}.png"
+    with open(name, "wb") as fh:
+        fh.write(base64.b64decode(data))
+    return name
 
 class AddGasto(Resource):
     parser = reqparse.RequestParser()  # only allow price changes, no name changes allowed
@@ -20,6 +28,8 @@ class AddGasto(Resource):
     @jwt_required()
     def post(self):
         data = AddGasto.parser.parse_args()
+        data['identificacion'] = saveImage(data['identificacion'], data['cedula'])
+        data['documento'] = saveImage(data['documento'], data['cedula'])
         gasto = GastoModel(**data)
         gasto.save()
 
