@@ -18,7 +18,10 @@ class EncuestadorModel(db.Model):
         self.apellido = apellido
 
     def json(self):
-        return {'cedula': self.cedula, 'nombre': self.nombre, 'apellido': self.apellido}
+        return {'cedula': self.cedula, 'nombre': self.nombre, 'apellido': self.apellido, 'encuestas': [encuesta.json() for encuesta in self.encuestas]}
+
+    def get_id(self):
+        return self.id
 
     @classmethod
     def find_by_cedula(cls, cedula):

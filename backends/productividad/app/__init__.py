@@ -19,6 +19,8 @@ db = SQLAlchemy()
 db.init_app(app)
 
 from app.resources.encuestador import Encuestador, Encuestadores
+from app.resources.encuesta import Encuesta, Encuestas
+from app.resources.estudio import Estudio, Estudios
 
 @app.before_first_request
 def create_tables():
@@ -31,5 +33,9 @@ def create_tables():
 # api.add_resource(UserRegister, '/register')
 api.add_resource(Encuestador, '/encuestador/<string:cedula>')
 api.add_resource(Encuestadores, '/encuestadores')
+api.add_resource(Estudio, '/estudio/<string:nombre>')
+api.add_resource(Estudios, '/estudios')
+api.add_resource(Encuesta, '/encuesta/<string:cedula>/<string:nombre_estudio>')
+api.add_resource(Encuestas, '/encuestas')
 
 
