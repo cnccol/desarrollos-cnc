@@ -17,7 +17,7 @@ db = SQLAlchemy()
 db.init_app(app)
 
 from app.resources.user import UserRegister
-from app.resources.gasto import AddGasto
+from app.resources.gasto import AddGasto, Gastos, GastosEncuestador
 from app.security import authenticate, identity
 
 @app.before_first_request
@@ -28,5 +28,7 @@ jwt = JWT(app, authenticate, identity)  # Auto Creates /auth endpoint
 
 api.add_resource(UserRegister, '/register')
 api.add_resource(AddGasto, '/gasto')
+api.add_resource(Gastos, '/gastos')
+api.add_resource(GastosEncuestador,'/gastos/<string:cedula>')
 
 

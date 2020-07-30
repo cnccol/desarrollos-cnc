@@ -24,3 +24,14 @@ class AddGasto(Resource):
         gasto.save()
 
         return gasto.json(), 201
+
+class Gastos(Resource):
+    @jwt_required()
+    def get(self):
+        #print(GastoModel.query.all(), flush=True)
+        return {'gastos': [gasto.json() for gasto in GastoModel.query.all()]}
+
+class GastosEncuestador(Resource):
+    @jwt_required()
+    def get(self, cedula):
+        return {'gastos': [gasto.json() for gasto in GastoModel.find_by_cedula(cedula)]}

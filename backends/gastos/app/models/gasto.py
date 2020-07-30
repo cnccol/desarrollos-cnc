@@ -34,7 +34,9 @@ class GastoModel(db.Model):
             self.medio = medio
 
     def json(self):
-        return {'cedula': self.cedula,
+        return {
+            'id': self.id,
+            'cedula': self.cedula,
             'fecha': self.fecha.strftime("%Y-%m-%d"),
             'fecha_subido': self.fecha_subido.strftime("%Y-%m-%d"),
             'valor': self.valor,
@@ -43,7 +45,8 @@ class GastoModel(db.Model):
             'documento': self.documento,
             'origen': self.origen,
             'destino': self.destino,
-            'medio': self.medio
+            'medio': self.medio,
+            'aprobado': self.aprobado
             }
 
     def save(self):
@@ -57,7 +60,7 @@ class GastoModel(db.Model):
     @classmethod
     def find_by_cedula(cls,cedula):
          """This method gets all the bucketlists for a given user."""
-         return cls.query.filter_by(cedula=cedula)
+         return cls.query.filter_by(cedula=cedula).all()
 
     def delete(self):
         """Deletes a given bucketlist."""
