@@ -35,8 +35,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 
-const API_LOGIN = '/auth';
-const API_GASTO = '/gasto';
+const API_LOGIN = 'http://cloud.cnccol.com:5000/auth';
+const API_GASTO = 'http://cloud.cnccol.com:5000/gasto';
 
 const useStyles = makeStyles((theme) => ({
     title: {
