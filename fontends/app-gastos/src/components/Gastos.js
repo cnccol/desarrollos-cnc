@@ -20,7 +20,6 @@ import {
     RadioGroup,
     FormControlLabel,
     TextField,
-    MenuItem,
     Collapse,
     Backdrop,
     CircularProgress,
@@ -36,7 +35,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import HelpIcon from '@material-ui/icons/Help';
-import municipios from './municipios';
+import departments from './departamentos';
+import municipalities from './municipios';
 
 const API_DEFAULT = 'http://cloud.cnccol.com:5000';
 const API_LOGIN = API_DEFAULT + '/auth';
@@ -86,32 +86,53 @@ const useStyles = makeStyles((theme) => ({
 function Gastos(props) {
     const classes = useStyles();
     const theme = props.theme;
+
     const [auth, setAuth] = useState(true); ////////////////////////////////////
     const [accessToken, setAccessToken] = useState('');
     const [user, setUser] = useState('');
     const [password, setPassword] = useState('');
+
     const [addExpense, changeAddExpense] = useState(true); /////////////////////////////////////
+
     const [date, setDate] = useState(new Date());
     const [type, setType] = useState(0);
+
+    const [transportType, setTransportType] = useState('Urbano');
+    const [department1, setDepartment1] = useState(null);
+    const [municipality1, setMunicipality1] = useState(null);
+    const [department2, setDepartment2] = useState(null);
+    const [municipality2, setMunicipality2] = useState(null);
     const [tripStart, setTripStart] = useState('');
     const [tripEnd, setTripEnd] = useState('');
-    const [conveyance, setConveyance] = useState('');
+
     const [expenseValue, setExpenseValue] = useState('');
     const [expenseDescription, setExpenseDescription] = useState('');
+
+    const [name, setName] = useState('');
+    const [id, setId] = useState('');
+    const [address, setAddress] = useState('');
+    const [phone, setPhone] = useState('');
+    const [city, setCity] = useState(null);
+    const [plate, setPlate] = useState('');
+
     const [file, setFile] = useState(null);
     const [file2, setFile2] = useState(null);
+    const [file3, setFile3] = useState(null);
     const [base64_1, setBase64_1] = useState('');
     const [base64_2, setBase64_2] = useState('');
+    const [base64_3, setBase64_3] = useState('');
+
     const hiddenFileInput = useRef(null);
     const hiddenFileInput2 = useRef(null);
-    const [errors, setErrors] = useState([false, false, false, false, false, false, false, false, false]);
+    const hiddenFileInput3 = useRef(null);
+
+    const [errors, setErrors] = useState([false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]);
     const [showError, setShowError] = useState(false);
     const [messageError, setMessageError] = useState('');
     const [showBackdrop, setShowBackdrop] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [errorFile, setErrorFile] = useState(false);
     const [openTooltip, setOpenTooltip] = useState(false);
-    const [tipoTransporte, setTipoTransporte] = useState(0);
 
     function validateLogin() {
         let errorLogin = false;
@@ -160,41 +181,89 @@ function Gastos(props) {
 
     function validateSend() {
         let errorSend = false;
-        if (type === 1) {
-            if (tripStart === '') {
+        if (type === 2) {
+            if (department1 === null) {
                 errorSend = true;
                 errors[2] = true;
             }
-            if (tripEnd === '') {
+            if (municipality1 === null) {
                 errorSend = true;
                 errors[3] = true;
             }
-            if (conveyance === '') {
+            if (transportType === 'Urbano' || transportType === 'Taxi') {
+                if (tripStart === '') {
+                    errorSend = true;
+                    errors[4] = true;
+                }
+                if (tripEnd === '') {
+                    errorSend = true;
+                    errors[5] = true;
+                }
+            }
+            else {
+                if (department2 === null) {
+                    errorSend = true;
+                    errors[6] = true;
+                }
+                if (municipality2 === null) {
+                    errorSend = true;
+                    errors[7] = true;
+                }
+            }
+        }
+        else {
+            if (address === '') {
                 errorSend = true;
-                errors[4] = true;
+                errors[12] = true;
             }
         }
         if (expenseValue === '' || parseInt(expenseValue) <= 0) {
             errorSend = true;
-            errors[5] = true;
+            errors[8] = true;
         }
         if (expenseDescription === '') {
             errorSend = true;
-            errors[6] = true;
+            errors[9] = true;
+        }
+        if (name === '') {
+            errorSend = true;
+            errors[10] = true;
+        }
+        if (id === '') {
+            errorSend = true;
+            errors[11] = true;
+        }
+        if (phone === '') {
+            errorSend = true;
+            errors[13] = true;
+        }
+        if (transportType === 'Taxi') {
+            if (plate === '') {
+                errorSend = true;
+                errors[14] = true;
+            }
+            if (file3 === null) {
+                errorSend = true;
+                errors[18] = true;
+            }
+        }
+        if (city === null) {
+            errorSend = true;
+            errors[15] = true;
         }
         if (file === null) {
             errorSend = true;
-            errors[7] = true;
+            errors[16] = true;
         }
         if (file2 === null) {
             errorSend = true;
-            errors[8] = true;
+            errors[17] = true;
         }
         if (errorSend) {
             setErrors([...errors]);
         }
         else {
-            send()
+            alert('send')
         }
     }
 
@@ -212,8 +281,7 @@ function Gastos(props) {
                 'identificacion': base64_1.split('base64,')[1],
                 'documento': base64_2.split('base64,')[1],
                 'origen': tripStart,
-                'destino': tripEnd,
-                'medio': conveyance
+                'destino': tripEnd
             })
         })
         res
@@ -224,11 +292,13 @@ function Gastos(props) {
                     setShowSuccess(true);
                     clearTripDescription();
                     clearExpensiveInformation();
+                    clearBeneficiaryInformation()
                 }
                 else if (d['error'] === 'Invalid token') {
                     setAuth(false);
                     clearTripDescription();
                     clearExpensiveInformation();
+                    clearBeneficiaryInformation()
                     setShowError(true);
                     setMessageError('Tu sesión expiró, inicia nuevamente');
                     window.scrollTo(0, 0);
@@ -244,10 +314,16 @@ function Gastos(props) {
     function clearTripDescription() {
         setTripStart('');
         setTripEnd('');
-        setConveyance('');
+        setDepartment1(null);
+        setMunicipality1(null);
+        setDepartment2(null);
+        setMunicipality2(null);
         errors[2] = false;
         errors[3] = false;
         errors[4] = false;
+        errors[5] = false;
+        errors[6] = false;
+        errors[7] = false;
         setErrors([...errors]);
     }
 
@@ -260,8 +336,27 @@ function Gastos(props) {
         setFile2(null);
         setBase64_1('');
         setBase64_2('');
-        errors[5] = false;
-        errors[6] = false;
+        errors[8] = false;
+        errors[9] = false;
+        errors[16] = false;
+        errors[17] = false;
+        errors[18] = false;
+        setErrors([...errors]);
+    }
+
+    function clearBeneficiaryInformation() {
+        setName('');
+        setId('');
+        setAddress('');
+        setPhone('');
+        setPlate('');
+        setCity(null);
+        errors[10] = false;
+        errors[11] = false;
+        errors[12] = false;
+        errors[13] = false;
+        errors[14] = false;
+        errors[15] = false;
         setErrors([...errors]);
     }
 
@@ -286,6 +381,12 @@ function Gastos(props) {
         }
     }
 
+    function municipalitiesFilter(department) {
+        return (municipalities.filter(municipality => {
+            return municipality.departamento === department;
+        }))
+    }
+
     return (
         <div className='Dashboard'>
             <header className='Dashboard-header'>
@@ -297,12 +398,13 @@ function Gastos(props) {
                         <Typography variant='h5' className={classes.title}>
                             App de Gastos
                         </Typography>
-                        {!auth ?
-                            null
-                            :
-                            <IconButton edge='start' color='inherit' onClick={() => { setAuth(false); changeAddExpense(false) }}>
-                                <ExitToAppIcon />
-                            </IconButton>
+                        {
+                            !auth ?
+                                null
+                                :
+                                <IconButton edge='start' color='inherit' onClick={() => { setAuth(false); changeAddExpense(false) }}>
+                                    <ExitToAppIcon />
+                                </IconButton>
                         }
                     </Toolbar>
                 </AppBar>
@@ -448,7 +550,7 @@ function Gastos(props) {
                                                 <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Selecciona el rubro al que está relacionado el gasto:</Typography>
                                                 <RadioGroup
                                                     value={type}
-                                                    onChange={(e) => { setType(parseInt(e.target.value)); clearTripDescription() }}
+                                                    onChange={(e) => { setType(parseInt(e.target.value)); clearTripDescription(); setTransportType('Urbano') }}
                                                 >
                                                     <FormControlLabel value={0} control={<Radio color='primary' />} label='Manutención' />
                                                     <FormControlLabel value={1} control={<Radio color='primary' />} label='Alojamiento' />
@@ -458,7 +560,7 @@ function Gastos(props) {
                                             <Divider style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }} />
                                             <Collapse in={type === 2}>
                                                 <Grid item xs>
-                                                    <CardContent style={{ paddingTop: 0 }}>
+                                                    <CardContent style={{ paddingTop: 0, paddingBottom: 0 }}>
                                                         <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Tipo de transporte:</Typography>
                                                         <Grid
                                                             container
@@ -466,35 +568,41 @@ function Gastos(props) {
                                                             alignItems='center'
                                                         >
                                                             <Grid item xs>
-                                                                <TextField
-                                                                    size='small'
-                                                                    variant='outlined'
-                                                                    fullWidth
-                                                                    select
-                                                                    //style={{ width: '100%' }}
-                                                                    value={tipoTransporte}
-                                                                    onChange={(e) => setTipoTransporte(parseInt(e.target.value))}
-                                                                //onChange={(e) => { setTripEnd(e.target.value); errors[3] = false; setErrors([...errors]); setShowError(false) }}
-                                                                //error={errors[3]}
-                                                                //helperText={errors[3] ? 'Este campo no puede estar vacío' : null}
-                                                                >
-                                                                    {
+                                                                <Autocomplete
+                                                                    value={transportType}
+                                                                    onChange={(event, value) => {
+                                                                        if (value !== null) {
+                                                                            setTransportType(value);
+                                                                            clearTripDescription();
+                                                                            if (value === 'Taxi') {
+                                                                                setPlate('');
+                                                                                errors[14] = false;
+                                                                                setErrors([...errors]);
+                                                                            }
+                                                                        }
+                                                                    }}
+                                                                    options={
                                                                         [
                                                                             { key: 0, value: "Urbano" },
                                                                             { key: 1, value: "Taxi" },
                                                                             { key: 2, value: "Intermunicipal/departamental" },
                                                                             { key: 3, value: "Transporte fluvial" },
                                                                             { key: 4, value: "Transporte especial" },
-                                                                        ].map(option => (
-                                                                            <MenuItem value={option.key}>
-                                                                                {option.value}
-                                                                            </MenuItem>
-                                                                        ))
+                                                                        ].map(option => option.value)
                                                                     }
-                                                                </TextField>
+                                                                    noOptionsText='No hay coincidencias'
+                                                                    renderInput={params => (
+                                                                        <TextField
+                                                                            {...params}
+                                                                            size='small'
+                                                                            variant='outlined'
+                                                                            fullWidth
+                                                                        />
+                                                                    )}
+                                                                />
                                                             </Grid>
                                                             {
-                                                                tipoTransporte === 4 ?
+                                                                transportType === 'Transporte especial' ?
                                                                     <Grid item>
                                                                         <Tooltip
                                                                             title={
@@ -510,6 +618,7 @@ function Gastos(props) {
                                                                             <IconButton
                                                                                 classes={{ root: classes.button, disabled: classes.buttonDisabled }}
                                                                                 onClick={() => setOpenTooltip(true)}
+                                                                                style={{ height: 40, width: 40 }}
                                                                             >
                                                                                 <HelpIcon />
                                                                             </IconButton>
@@ -520,72 +629,157 @@ function Gastos(props) {
                                                             }
                                                         </Grid>
                                                         <Divider style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }} />
-                                                        <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Descripción del recorrido</Typography>
-                                                        <Grid
-                                                            container
-                                                            direction='row'
-                                                            alignItems='center'
-                                                            style={{ marginBottom: theme.spacing(1) }}
-                                                        >
-                                                            <Grid item style={{ marginRight: theme.spacing(2), width: 147.5 }} >
-                                                                <Typography variant='body1'>Origen:</Typography>
+                                                        <Typography style={{ marginBottom: theme.spacing(2) }} variant='body1'>Datos del desplazamiento:</Typography>
+                                                        <Collapse in={transportType === 'Urbano' || transportType === 'Taxi'}>
+                                                            <Grid item xs style={{ marginBottom: theme.spacing(1) }}>
+                                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Departamento:</Typography>
+                                                                <Autocomplete
+                                                                    value={department1}
+                                                                    onChange={(event, value) => { setDepartment1(value); setMunicipality1(null); errors[2] = false; setErrors([...errors]); setShowError(false) }}
+                                                                    options={departments.map(option => option.departamento)}
+                                                                    noOptionsText='No hay coincidencias'
+                                                                    renderInput={params => (
+                                                                        <TextField
+                                                                            {...params}
+                                                                            size='small'
+                                                                            variant='outlined'
+                                                                            fullWidth
+                                                                            error={errors[2]}
+                                                                            helperText={errors[2] ? 'Este campo no puede estar vacío' : null}
+                                                                        />
+                                                                    )}
+                                                                />
                                                             </Grid>
-                                                            <Grid item xs>
+                                                            <Grid item xs style={{ marginBottom: theme.spacing(1) }}>
+                                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Municipio:</Typography>
+                                                                <Autocomplete
+                                                                    disabled={!department1}
+                                                                    value={municipality1}
+                                                                    onChange={(event, value) => { setMunicipality1(value); errors[3] = false; setErrors([...errors]); setShowError(false) }}
+                                                                    options={municipalitiesFilter(department1).map(option => option.municipio)}
+                                                                    noOptionsText='No hay coincidencias'
+                                                                    renderInput={params => (
+                                                                        <TextField
+                                                                            {...params}
+                                                                            size='small'
+                                                                            variant='outlined'
+                                                                            fullWidth
+                                                                            error={errors[3]}
+                                                                            helperText={errors[3] ? 'Este campo no puede estar vacío' : null}
+                                                                        />
+                                                                    )}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs style={{ marginBottom: theme.spacing(1) }}>
+                                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Origen:</Typography>
                                                                 <TextField
                                                                     size='small'
                                                                     variant='outlined'
                                                                     fullWidth
                                                                     value={tripStart}
-                                                                    onChange={(e) => { setTripStart(e.target.value); errors[2] = false; setErrors([...errors]); setShowError(false) }}
-                                                                    error={errors[2]}
-                                                                    helperText={errors[2] ? 'Este campo no puede estar vacío' : null}
+                                                                    onChange={(e) => { setTripStart(e.target.value); errors[4] = false; setErrors([...errors]); setShowError(false) }}
+                                                                    error={errors[4]}
+                                                                    helperText={errors[4] ? 'Este campo no puede estar vacío' : null}
                                                                 />
                                                             </Grid>
-                                                        </Grid>
-                                                        <Grid
-                                                            container
-                                                            direction='row'
-                                                            alignItems='center'
-                                                            style={{ marginBottom: theme.spacing(1) }}
-                                                        >
-                                                            <Grid item style={{ marginRight: theme.spacing(2), width: 147.5 }} >
-                                                                <Typography variant='body1'>Destino:</Typography>
-                                                            </Grid>
                                                             <Grid item xs>
+                                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Destino:</Typography>
                                                                 <TextField
                                                                     size='small'
                                                                     variant='outlined'
                                                                     fullWidth
                                                                     value={tripEnd}
-                                                                    onChange={(e) => { setTripEnd(e.target.value); errors[3] = false; setErrors([...errors]); setShowError(false) }}
-                                                                    error={errors[3]}
-                                                                    helperText={errors[3] ? 'Este campo no puede estar vacío' : null}
+                                                                    onChange={(e) => { setTripEnd(e.target.value); errors[5] = false; setErrors([...errors]); setShowError(false) }}
+                                                                    error={errors[5]}
+                                                                    helperText={errors[5] ? 'Este campo no puede estar vacío' : null}
                                                                 />
                                                             </Grid>
-                                                        </Grid>
-                                                        <Grid
-                                                            container
-                                                            direction='row'
-                                                            alignItems='center'
-                                                        >
-                                                            <Grid item style={{ marginRight: theme.spacing(2) }} >
-                                                                <Typography variant='body1'>Medio de transporte:</Typography>
-                                                            </Grid>
-                                                            <Grid item xs>
-                                                                <TextField
-                                                                    size='small'
-                                                                    variant='outlined'
-                                                                    fullWidth
-                                                                    value={conveyance}
-                                                                    onChange={(e) => { setConveyance(e.target.value); errors[4] = false; setErrors([...errors]); setShowError(false) }}
-                                                                    error={errors[4]}
-                                                                    helperText={errors[4] ? 'Este campo no puede estar vacío' : null}
+                                                        </Collapse>
+                                                        <Collapse in={!(transportType === 'Urbano' || transportType === 'Taxi')}>
+                                                            <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Origen:</Typography>
+                                                            <Grid item xs style={{ marginBottom: theme.spacing(1), paddingLeft: theme.spacing(2), paddingRight: theme.spacing(2) }}>
+                                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Departamento:</Typography>
+                                                                <Autocomplete
+                                                                    value={department1}
+                                                                    onChange={(event, value) => { setDepartment1(value); setMunicipality1(null); errors[2] = false; setErrors([...errors]); setShowError(false) }}
+                                                                    options={departments.map(option => option.departamento)}
+                                                                    noOptionsText='No hay coincidencias'
+                                                                    renderInput={params => (
+                                                                        <TextField
+                                                                            {...params}
+                                                                            size='small'
+                                                                            variant='outlined'
+                                                                            fullWidth
+                                                                            error={errors[2]}
+                                                                            helperText={errors[2] ? 'Este campo no puede estar vacío' : null}
+                                                                        />
+                                                                    )}
                                                                 />
                                                             </Grid>
-                                                        </Grid>
+                                                            <Grid item xs style={{ marginBottom: theme.spacing(1), paddingLeft: theme.spacing(2), paddingRight: theme.spacing(2) }}>
+                                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Municipio:</Typography>
+                                                                <Autocomplete
+                                                                    disabled={!department1}
+                                                                    value={municipality1}
+                                                                    onChange={(event, value) => { setMunicipality1(value); errors[3] = false; setErrors([...errors]); setShowError(false) }}
+                                                                    options={municipalitiesFilter(department1).map(option => option.municipio)}
+                                                                    noOptionsText='No hay coincidencias'
+                                                                    renderInput={params => (
+                                                                        <TextField
+                                                                            {...params}
+                                                                            size='small'
+                                                                            variant='outlined'
+                                                                            fullWidth
+                                                                            error={errors[3]}
+                                                                            helperText={errors[3] ? 'Este campo no puede estar vacío' : null}
+                                                                        />
+                                                                    )}
+                                                                />
+                                                            </Grid>
+                                                            <Typography style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(1) }} variant='body1'>Destino:</Typography>
+                                                            <Grid item xs style={{ marginBottom: theme.spacing(1), paddingLeft: theme.spacing(2), paddingRight: theme.spacing(2) }}>
+                                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Departamento:</Typography>
+                                                                <Autocomplete
+                                                                    value={department2}
+                                                                    onChange={(event, value) => { setDepartment2(value); setMunicipality2(null); errors[6] = false; setErrors([...errors]); setShowError(false) }}
+                                                                    options={departments.map(option => option.departamento)}
+                                                                    noOptionsText='No hay coincidencias'
+                                                                    renderInput={params => (
+                                                                        <TextField
+                                                                            {...params}
+                                                                            size='small'
+                                                                            variant='outlined'
+                                                                            fullWidth
+                                                                            error={errors[6]}
+                                                                            helperText={errors[6] ? 'Este campo no puede estar vacío' : null}
+                                                                        />
+                                                                    )}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs style={{ marginBottom: theme.spacing(1), paddingLeft: theme.spacing(2), paddingRight: theme.spacing(2) }}>
+                                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Municipio:</Typography>
+                                                                <Autocomplete
+                                                                    disabled={!department2}
+                                                                    value={municipality2}
+                                                                    onChange={(event, value) => { setMunicipality2(value); errors[7] = false; setErrors([...errors]); setShowError(false) }}
+                                                                    options={municipalitiesFilter(department2).map(option => option.municipio)}
+                                                                    noOptionsText='No hay coincidencias'
+                                                                    renderInput={params => (
+                                                                        <TextField
+                                                                            {...params}
+                                                                            size='small'
+                                                                            variant='outlined'
+                                                                            fullWidth
+                                                                            error={errors[7]}
+                                                                            helperText={errors[7] ? 'Este campo no puede estar vacío' : null}
+                                                                        />
+                                                                    )}
+                                                                />
+                                                            </Grid>
+                                                        </Collapse>
                                                     </CardContent>
                                                 </Grid>
-                                                <Divider style={{ marginBottom: theme.spacing(2) }} />
+                                                <Divider style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }} />
                                             </Collapse>
                                             <Grid item xs>
                                                 <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Valor del gasto:</Typography>
@@ -599,9 +793,9 @@ function Gastos(props) {
                                                     decimalPlaces={0}
                                                     fullWidth
                                                     value={expenseValue}
-                                                    onChange={(event, value) => { setExpenseValue(value); errors[5] = false; setErrors([...errors]); setShowError(false) }}
-                                                    error={errors[5]}
-                                                    helperText={errors[5] ? 'Este campo no puede estar vacío y debe ser mayor a cero' : null}
+                                                    onChange={(event, value) => { setExpenseValue(value); errors[8] = false; setErrors([...errors]); setShowError(false) }}
+                                                    error={errors[8]}
+                                                    helperText={errors[8] ? 'Este campo no puede estar vacío y debe ser mayor a cero' : null}
                                                 />
                                             </Grid>
                                             <Divider style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }} />
@@ -614,9 +808,9 @@ function Gastos(props) {
                                                     multiline
                                                     rows={4}
                                                     value={expenseDescription}
-                                                    onChange={(e) => { setExpenseDescription(e.target.value); errors[6] = false; setErrors([...errors]); setShowError(false) }}
-                                                    error={errors[6]}
-                                                    helperText={errors[6] ? 'Este campo no puede estar vacío' : null}
+                                                    onChange={(e) => { setExpenseDescription(e.target.value); errors[9] = false; setErrors([...errors]); setShowError(false) }}
+                                                    error={errors[9]}
+                                                    helperText={errors[9] ? 'Este campo no puede estar vacío' : null}
                                                 />
                                             </Grid>
                                         </Grid>
@@ -640,10 +834,10 @@ function Gastos(props) {
                                                     size='small'
                                                     variant='outlined'
                                                     fullWidth
-                                                //value={tripStart}
-                                                //onChange={(e) => { setTripStart(e.target.value); errors[2] = false; setErrors([...errors]); setShowError(false) }}
-                                                //error={errors[2]}
-                                                //helperText={errors[2] ? 'Este campo no puede estar vacío' : null}
+                                                    value={name}
+                                                    onChange={(e) => { setName(e.target.value); errors[10] = false; setErrors([...errors]); setShowError(false) }}
+                                                    error={errors[10]}
+                                                    helperText={errors[10] ? 'Este campo no puede estar vacío' : null}
                                                 />
                                             </Grid>
                                             <Divider style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }} />
@@ -653,10 +847,10 @@ function Gastos(props) {
                                                     size='small'
                                                     variant='outlined'
                                                     fullWidth
-                                                //value={tripStart}
-                                                //onChange={(e) => { setTripStart(e.target.value); errors[2] = false; setErrors([...errors]); setShowError(false) }}
-                                                //error={errors[2]}
-                                                //helperText={errors[2] ? 'Este campo no puede estar vacío' : null}
+                                                    value={id}
+                                                    onChange={(e) => { setId(e.target.value); errors[11] = false; setErrors([...errors]); setShowError(false) }}
+                                                    error={errors[11]}
+                                                    helperText={errors[11] ? 'Este campo no puede estar vacío' : null}
                                                 />
                                             </Grid>
                                             <Divider style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }} />
@@ -667,10 +861,10 @@ function Gastos(props) {
                                                         size='small'
                                                         variant='outlined'
                                                         fullWidth
-                                                    //value={tripStart}
-                                                    //onChange={(e) => { setTripStart(e.target.value); errors[2] = false; setErrors([...errors]); setShowError(false) }}
-                                                    //error={errors[2]}
-                                                    //helperText={errors[2] ? 'Este campo no puede estar vacío' : null}
+                                                        value={address}
+                                                        onChange={(e) => { setAddress(e.target.value); errors[12] = false; setErrors([...errors]); setShowError(false) }}
+                                                        error={errors[12]}
+                                                        helperText={errors[12] ? 'Este campo no puede estar vacío' : null}
                                                     />
                                                 </Grid>
                                                 <Divider style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }} />
@@ -681,18 +875,34 @@ function Gastos(props) {
                                                     size='small'
                                                     variant='outlined'
                                                     fullWidth
-                                                //value={tripStart}
-                                                //onChange={(e) => { setTripStart(e.target.value); errors[2] = false; setErrors([...errors]); setShowError(false) }}
-                                                //error={errors[2]}
-                                                //helperText={errors[2] ? 'Este campo no puede estar vacío' : null}
+                                                    value={phone}
+                                                    onChange={(e) => { setPhone(e.target.value); errors[13] = false; setErrors([...errors]); setShowError(false) }}
+                                                    error={errors[13]}
+                                                    helperText={errors[13] ? 'Este campo no puede estar vacío' : null}
                                                 />
                                             </Grid>
                                             <Divider style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }} />
+                                            <Collapse in={transportType === 'Taxi'}>
+                                                <Grid item xs>
+                                                    <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Placa del vehículo:</Typography>
+                                                    <TextField
+                                                        size='small'
+                                                        variant='outlined'
+                                                        fullWidth
+                                                        value={plate}
+                                                        onChange={(e) => { setPlate(e.target.value); errors[14] = false; setErrors([...errors]); setShowError(false) }}
+                                                        error={errors[14]}
+                                                        helperText={errors[14] ? 'Este campo no puede estar vacío' : null}
+                                                    />
+                                                </Grid>
+                                                <Divider style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }} />
+                                            </Collapse>
                                             <Grid item xs>
                                                 <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Ciudad o municipio:</Typography>
                                                 <Autocomplete
-                                                    disablePortal={true}
-                                                    options={municipios.map(option => option.municipio)}
+                                                    value={city}
+                                                    onChange={(event, value) => { setCity(value); errors[15] = false; setErrors([...errors]); setShowError(false) }}
+                                                    options={municipalities.map(option => option.municipio)}
                                                     noOptionsText='No hay coincidencias'
                                                     renderInput={params => (
                                                         <TextField
@@ -700,10 +910,8 @@ function Gastos(props) {
                                                             size='small'
                                                             variant='outlined'
                                                             fullWidth
-                                                        //value={tripStart}
-                                                        //onChange={(e) => { setTripStart(e.target.value); errors[2] = false; setErrors([...errors]); setShowError(false) }}
-                                                        //error={errors[2]}
-                                                        //helperText={errors[2] ? 'Este campo no puede estar vacío' : null}
+                                                            error={errors[15]}
+                                                            helperText={errors[15] ? 'Este campo no puede estar vacío' : null}
                                                         />
                                                     )}
                                                 />
@@ -723,7 +931,7 @@ function Gastos(props) {
                                             justify='center'
                                         >
                                             <Grid item>
-                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>RUT o cédula del prestador del servicio asociado al gasto:</Typography>
+                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Cédula o RUT del prestador del servicio asociado al gasto:</Typography>
                                                 <Grid
                                                     container
                                                     direction='row'
@@ -735,13 +943,13 @@ function Gastos(props) {
                                                         </Button>
                                                     </Grid>
                                                     <Grid item>
-                                                        <Typography color={errors[7] ? 'error' : 'inherit'} variant='body2'>{file ? file.name : 'Ningún archivo cargado'}</Typography>
+                                                        <Typography color={errors[16] ? 'error' : 'inherit'} variant='body2'>{file ? file.name : 'Ningún archivo cargado'}</Typography>
                                                     </Grid>
                                                     <input
                                                         type='file'
                                                         ref={hiddenFileInput}
                                                         style={{ display: 'none' }}
-                                                        onChange={(e) => Base64(e.target.files[0], setFile, setBase64_1, 7)}
+                                                        onChange={(e) => Base64(e.target.files[0], setFile, setBase64_1, 16)}
                                                     />
                                                 </Grid>
                                             </Grid>
@@ -759,16 +967,42 @@ function Gastos(props) {
                                                     </Button>
                                                     </Grid>
                                                     <Grid item>
-                                                        <Typography color={errors[8] ? 'error' : 'inherit'} variant='body2'>{file2 ? file2.name : 'Ningún archivo cargado'}</Typography>
+                                                        <Typography color={errors[17] ? 'error' : 'inherit'} variant='body2'>{file2 ? file2.name : 'Ningún archivo cargado'}</Typography>
                                                     </Grid>
                                                     <input
                                                         type='file'
                                                         ref={hiddenFileInput2}
                                                         style={{ display: 'none' }}
-                                                        onChange={(e) => Base64(e.target.files[0], setFile2, setBase64_2, 8)}
+                                                        onChange={(e) => Base64(e.target.files[0], setFile2, setBase64_2, 17)}
                                                     />
                                                 </Grid>
                                             </Grid>
+                                            <Collapse in={transportType === 'Taxi'}>
+                                                <Divider style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }} />
+                                                <Grid item>
+                                                    <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Foto planilla:</Typography>
+                                                    <Grid
+                                                        container
+                                                        direction='row'
+                                                        alignItems='center'
+                                                    >
+                                                        <Grid item>
+                                                            <Button size='small' variant='outlined' style={{ marginRight: theme.spacing(1) }} onClick={() => hiddenFileInput3.current.click()}>
+                                                                Cargar archivo
+                                                            </Button>
+                                                        </Grid>
+                                                        <Grid item>
+                                                            <Typography color={errors[18] ? 'error' : 'inherit'} variant='body2'>{file3 ? file3.name : 'Ningún archivo cargado'}</Typography>
+                                                        </Grid>
+                                                        <input
+                                                            type='file'
+                                                            ref={hiddenFileInput3}
+                                                            style={{ display: 'none' }}
+                                                            onChange={(e) => Base64(e.target.files[0], setFile3, setBase64_3, 18)}
+                                                        />
+                                                    </Grid>
+                                                </Grid>
+                                            </Collapse>
                                         </Grid>
                                     </CardContent>
                                     <Divider style={{ marginBottom: theme.spacing(1) }} />
@@ -782,7 +1016,7 @@ function Gastos(props) {
                                                 <Button style={{ width: 103.21 }} variant='contained' color='primary' onClick={() => validateSend()}>Enviar</Button>
                                             </Grid>
                                             <Grid item>
-                                                <Button style={{ width: 103.21 }} variant='contained' color='secondary' onClick={() => { changeAddExpense(false); clearTripDescription(); clearExpensiveInformation() }}>Cancelar</Button>
+                                                <Button style={{ width: 103.21 }} variant='contained' color='secondary' onClick={() => { changeAddExpense(false); clearTripDescription(); clearExpensiveInformation(); clearBeneficiaryInformation() }}>Cancelar</Button>
                                             </Grid>
                                         </Grid>
                                     </CardActions>
