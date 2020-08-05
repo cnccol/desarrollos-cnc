@@ -87,12 +87,12 @@ function Gastos(props) {
     const classes = useStyles();
     const theme = props.theme;
 
-    const [auth, setAuth] = useState(true); ////////////////////////////////////
+    const [auth, setAuth] = useState(false);
     const [accessToken, setAccessToken] = useState('');
     const [user, setUser] = useState('');
     const [password, setPassword] = useState('');
 
-    const [addExpense, changeAddExpense] = useState(true); /////////////////////////////////////
+    const [addExpense, changeAddExpense] = useState(false);
 
     const [date, setDate] = useState(new Date());
     const [type, setType] = useState(0);
@@ -132,6 +132,7 @@ function Gastos(props) {
     const [showBackdrop, setShowBackdrop] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [errorFile, setErrorFile] = useState(false);
+    const [messageError2, setMessageError2] = useState('');
     const [openTooltip, setOpenTooltip] = useState(false);
 
     function validateLogin() {
@@ -261,9 +262,11 @@ function Gastos(props) {
         }
         if (errorSend) {
             setErrors([...errors]);
+            setErrorFile(true);
+            setMessageError2('Existen errores en algunos campos, por favor revisa la información suministrada');
         }
         else {
-            alert('send')
+            send();
         }
     }
 
@@ -281,7 +284,19 @@ function Gastos(props) {
                 'identificacion': base64_1.split('base64,')[1],
                 'documento': base64_2.split('base64,')[1],
                 'origen': tripStart,
-                'destino': tripEnd
+                'destino': tripEnd,
+                'medio': transportType,
+                'beneficiario_documento': id,
+                'beneficiario_nombre': name,
+                'beneficiario_telefono': phone,
+                'beneficiario_ciudad': city,
+                'beneficiario_direccion': address,
+                'beneficiario_placa': plate,
+                'foto_planilla': base64_3.split('base64,')[1],
+                'origen_ciudad': municipality1,
+                'destino_ciudad': municipality2,
+                'origen_departamento': department1,
+                'destino_departamento': department2
             })
         })
         res
@@ -312,6 +327,7 @@ function Gastos(props) {
     }
 
     function clearTripDescription() {
+        setTransportType('Urbano');
         setTripStart('');
         setTripEnd('');
         setDepartment1(null);
@@ -351,12 +367,14 @@ function Gastos(props) {
         setPhone('');
         setPlate('');
         setCity(null);
+        setFile3(null);
         errors[10] = false;
         errors[11] = false;
         errors[12] = false;
         errors[13] = false;
         errors[14] = false;
         errors[15] = false;
+        errors[18] = false;
         setErrors([...errors]);
     }
 
@@ -377,6 +395,7 @@ function Gastos(props) {
             }
             else {
                 setErrorFile(true);
+                setMessageError2('El tipo de archivo seleccionado no es reconocido');
             }
         }
     }
@@ -538,6 +557,7 @@ function Gastos(props) {
                                                         format="EEEE, dd 'de' MMMM 'del' yyyy"
                                                         fullWidth={true}
                                                         disableToolbar={true}
+                                                        minDate={(new Date()).setDate((new Date()).getDate() - 7)}
                                                         disableFuture={true}
                                                         autoOk={true}
                                                         value={date}
@@ -550,7 +570,7 @@ function Gastos(props) {
                                                 <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Selecciona el rubro al que está relacionado el gasto:</Typography>
                                                 <RadioGroup
                                                     value={type}
-                                                    onChange={(e) => { setType(parseInt(e.target.value)); clearTripDescription(); setTransportType('Urbano') }}
+                                                    onChange={(e) => { setType(parseInt(e.target.value)); clearTripDescription() }}
                                                 >
                                                     <FormControlLabel value={0} control={<Radio color='primary' />} label='Manutención' />
                                                     <FormControlLabel value={1} control={<Radio color='primary' />} label='Alojamiento' />
@@ -572,13 +592,13 @@ function Gastos(props) {
                                                                     value={transportType}
                                                                     onChange={(event, value) => {
                                                                         if (value !== null) {
-                                                                            setTransportType(value);
                                                                             clearTripDescription();
-                                                                            if (value === 'Taxi') {
-                                                                                setPlate('');
-                                                                                errors[14] = false;
-                                                                                setErrors([...errors]);
-                                                                            }
+                                                                            setTransportType(value);
+                                                                            setPlate('');
+                                                                            setFile3(null);
+                                                                            errors[14] = false;
+                                                                            errors[18] = false;
+                                                                            setErrors([...errors]);
                                                                         }
                                                                     }}
                                                                     options={
@@ -848,7 +868,7 @@ function Gastos(props) {
                                                     variant='outlined'
                                                     fullWidth
                                                     value={id}
-                                                    onChange={(e) => { setId(e.target.value); errors[11] = false; setErrors([...errors]); setShowError(false) }}
+                                                    onChange={(e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); setId(e.target.value); errors[11] = false; setErrors([...errors]); setShowError(false) }}
                                                     error={errors[11]}
                                                     helperText={errors[11] ? 'Este campo no puede estar vacío' : null}
                                                 />
@@ -876,7 +896,7 @@ function Gastos(props) {
                                                     variant='outlined'
                                                     fullWidth
                                                     value={phone}
-                                                    onChange={(e) => { setPhone(e.target.value); errors[13] = false; setErrors([...errors]); setShowError(false) }}
+                                                    onChange={(e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); setPhone(e.target.value); errors[13] = false; setErrors([...errors]); setShowError(false) }}
                                                     error={errors[13]}
                                                     helperText={errors[13] ? 'Este campo no puede estar vacío' : null}
                                                 />
@@ -1050,7 +1070,7 @@ function Gastos(props) {
                     onClose={() => setErrorFile(false)}
                 >
                     <Alert onClose={() => setErrorFile(false)} severity='error'>
-                        El tipo de archivo seleccionado no es reconocido
+                        {messageError2}
                     </Alert>
                 </Snackbar>
             </div>
