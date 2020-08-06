@@ -285,7 +285,7 @@ function Gastos(props) {
                 'documento': base64_2.split('base64,')[1],
                 'origen': tripStart,
                 'destino': tripEnd,
-                'medio': transportType,
+                'medio': type === 2 ? transportType : '',
                 'beneficiario_documento': id,
                 'beneficiario_nombre': name,
                 'beneficiario_telefono': phone,
@@ -293,10 +293,10 @@ function Gastos(props) {
                 'beneficiario_direccion': address,
                 'beneficiario_placa': plate,
                 'foto_planilla': base64_3.split('base64,')[1],
-                'origen_ciudad': municipality1,
-                'destino_ciudad': municipality2,
-                'origen_departamento': department1,
-                'destino_departamento': department2
+                'origen_ciudad': municipality1 === null ? '' : municipality1,
+                'destino_ciudad': municipality2 === null ? '' : municipality2,
+                'origen_departamento': department1 === null ? '' : department1,
+                'destino_departamento': department2 === null ? '' : department2
             })
         })
         res
@@ -368,6 +368,7 @@ function Gastos(props) {
         setPlate('');
         setCity(null);
         setFile3(null);
+        setBase64_2('');
         errors[10] = false;
         errors[11] = false;
         errors[12] = false;
