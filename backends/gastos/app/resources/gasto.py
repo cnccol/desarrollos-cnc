@@ -31,7 +31,7 @@ class AddGasto(Resource):
     parser.add_argument('beneficiario_direccion', type=str, required=True, help='texto no nulo')
     parser.add_argument('beneficiario_placa', type=str, required=True, help='texto no nulo')
     parser.add_argument('foto_planilla', type=str, required=True, help='texto no nulo')
-    parser.add_argument('origen_cuidad', type=str, required=True, help='texto no nulo')
+    parser.add_argument('origen_ciudad', type=str, required=True, help='texto no nulo')
     parser.add_argument('destino_ciudad', type=str, required=True, help='texto no nulo')
     parser.add_argument('origen_departamento', type=str, required=True, help='texto no nulo')
     parser.add_argument('destino_departamento', type=str, required=True, help='texto no nulo')

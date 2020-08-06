@@ -39,7 +39,7 @@ class GastoModel(db.Model):
     """
     origen = db.Column(db.String(255), nullable=True)
     destino = db.Column(db.String(255), nullable=True)
-    origen_cuidad = db.Column(db.String(255), nullable=True)
+    origen_ciudad = db.Column(db.String(255), nullable=True)
     destino_ciudad = db.Column(db.String(255), nullable=True)
     origen_departamento = db.Column(db.String(255), nullable=True)
     destino_departamento = db.Column(db.String(255), nullable=True)
@@ -53,7 +53,7 @@ class GastoModel(db.Model):
     def __init__(self, cedula, fecha, tipo, valor, descripcion,
         identificacion, documento, origen, destino, medio, beneficiario_ciudad,
         beneficiario_documento, beneficiario_direccion, beneficiario_nombre,
-        beneficiario_placa, beneficiario_telefono, foto_planilla, origen_cuidad,
+        beneficiario_placa, beneficiario_telefono, foto_planilla, origen_ciudad,
         origen_departamento,destino_ciudad, destino_departamento):
 
         """Inicializar un gasto"""
@@ -90,7 +90,7 @@ class GastoModel(db.Model):
         self.origen = origen
         self.destino = destino
         self.medio = medio
-        self.origen_cuidad = origen_cuidad
+        self.origen_cuidad = origen_ciudad
         self.destino_ciudad = destino_ciudad
         self.origen_departamento = origen_departamento
         self.destino_departamento = destino_departamento
