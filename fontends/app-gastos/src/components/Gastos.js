@@ -809,6 +809,7 @@ function Gastos(props) {
                                                     currencySymbol='$'
                                                     outputFormat='string'
                                                     minimumValue='0'
+                                                    maximumValue='2000000'
                                                     textAlign='left'
                                                     decimalPlaces={0}
                                                     fullWidth
