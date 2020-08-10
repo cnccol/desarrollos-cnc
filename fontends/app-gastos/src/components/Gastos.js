@@ -127,6 +127,7 @@ function Gastos(props) {
     const hiddenFileInput3 = useRef(null);
 
     const [errors, setErrors] = useState([false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]);
+    const refs = [useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null)]
     const [showError, setShowError] = useState(false);
     const [messageError, setMessageError] = useState('');
     const [showBackdrop, setShowBackdrop] = useState(false);
@@ -182,33 +183,50 @@ function Gastos(props) {
 
     function validateSend() {
         let errorSend = false;
+        let minTop = Infinity;
         if (type === 2) {
             if (department1 === null) {
                 errorSend = true;
                 errors[2] = true;
+                if (transportType === 'Urbano' || transportType === 'Taxi') {
+                    minTop = Math.min(minTop, refs[2].current.offsetTop)
+                }
+                else {
+                    minTop = Math.min(minTop, refs[19].current.offsetTop)
+                }
             }
             if (municipality1 === null) {
                 errorSend = true;
                 errors[3] = true;
+                if (transportType === 'Urbano' || transportType === 'Taxi') {
+                    minTop = Math.min(minTop, refs[3].current.offsetTop)
+                }
+                else {
+                    minTop = Math.min(minTop, refs[20].current.offsetTop)
+                }
             }
             if (transportType === 'Urbano' || transportType === 'Taxi') {
                 if (tripStart === '') {
                     errorSend = true;
                     errors[4] = true;
+                    minTop = Math.min(minTop, refs[4].current.offsetTop)
                 }
                 if (tripEnd === '') {
                     errorSend = true;
                     errors[5] = true;
+                    minTop = Math.min(minTop, refs[5].current.offsetTop)
                 }
             }
             else {
                 if (department2 === null) {
                     errorSend = true;
                     errors[6] = true;
+                    minTop = Math.min(minTop, refs[6].current.offsetTop)
                 }
                 if (municipality2 === null) {
                     errorSend = true;
                     errors[7] = true;
+                    minTop = Math.min(minTop, refs[7].current.offsetTop)
                 }
             }
         }
@@ -216,51 +234,63 @@ function Gastos(props) {
             if (address === '') {
                 errorSend = true;
                 errors[12] = true;
+                minTop = Math.min(minTop, refs[12].current.offsetTop)
             }
         }
         if (expenseValue === '' || parseInt(expenseValue) <= 0) {
             errorSend = true;
             errors[8] = true;
+            minTop = Math.min(minTop, refs[8].current.offsetTop)
         }
-        if (expenseDescription === '') {
+        if (expenseDescription.replace(/(\r\n|\n|\r)/gm, "") === '') {
             errorSend = true;
             errors[9] = true;
+            minTop = Math.min(minTop, refs[9].current.offsetTop)
         }
         if (name === '') {
             errorSend = true;
             errors[10] = true;
+            minTop = Math.min(minTop, refs[10].current.offsetTop)
         }
         if (id === '') {
             errorSend = true;
             errors[11] = true;
+            minTop = Math.min(minTop, refs[11].current.offsetTop)
         }
         if (phone === '') {
             errorSend = true;
             errors[13] = true;
+            minTop = Math.min(minTop, refs[13].current.offsetTop)
         }
         if (transportType === 'Taxi') {
             if (plate === '') {
                 errorSend = true;
                 errors[14] = true;
+                minTop = Math.min(minTop, refs[14].current.offsetTop)
             }
             if (file3 === null) {
                 errorSend = true;
                 errors[18] = true;
+                minTop = Math.min(minTop, refs[18].current.offsetTop)
             }
         }
         if (city === null) {
             errorSend = true;
             errors[15] = true;
+            minTop = Math.min(minTop, refs[15].current.offsetTop)
         }
         if (file === null) {
             errorSend = true;
             errors[16] = true;
+            minTop = Math.min(minTop, refs[16].current.offsetTop)
         }
         if (file2 === null) {
             errorSend = true;
             errors[17] = true;
+            minTop = Math.min(minTop, refs[17].current.offsetTop)
         }
         if (errorSend) {
+            window.scrollTo(0, minTop - 20);
             setErrors([...errors]);
             setErrorFile(true);
             setMessageError2('Existen errores en algunos campos, por favor revisa la información suministrada');
@@ -481,6 +511,7 @@ function Gastos(props) {
                                     >
                                         <Grid item xs style={{ marginBottom: theme.spacing(2) }}>
                                             <TextField
+                                                ref={refs[0]}
                                                 fullWidth={true}
                                                 size='small'
                                                 variant='outlined'
@@ -493,6 +524,7 @@ function Gastos(props) {
                                         </Grid>
                                         <Grid item xs style={{ marginBottom: theme.spacing(4) }}>
                                             <TextField
+                                                ref={refs[1]}
                                                 fullWidth={true}
                                                 type='password'
                                                 size='small'
@@ -654,7 +686,7 @@ function Gastos(props) {
                                                         <Typography style={{ marginBottom: theme.spacing(2) }} variant='body1'>Datos del desplazamiento:</Typography>
                                                         <Collapse in={transportType === 'Urbano' || transportType === 'Taxi'}>
                                                             <Grid item xs style={{ marginBottom: theme.spacing(1) }}>
-                                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Departamento:</Typography>
+                                                                <Typography ref={refs[2]} style={{ marginBottom: theme.spacing(1) }} variant='body1'>Departamento:</Typography>
                                                                 <Autocomplete
                                                                     value={department1}
                                                                     onChange={(event, value) => { setDepartment1(value); setMunicipality1(null); errors[2] = false; setErrors([...errors]); setShowError(false) }}
@@ -673,7 +705,7 @@ function Gastos(props) {
                                                                 />
                                                             </Grid>
                                                             <Grid item xs style={{ marginBottom: theme.spacing(1) }}>
-                                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Municipio:</Typography>
+                                                                <Typography ref={refs[3]} style={{ marginBottom: theme.spacing(1) }} variant='body1'>Municipio:</Typography>
                                                                 <Autocomplete
                                                                     disabled={!department1}
                                                                     value={municipality1}
@@ -693,7 +725,7 @@ function Gastos(props) {
                                                                 />
                                                             </Grid>
                                                             <Grid item xs style={{ marginBottom: theme.spacing(1) }}>
-                                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Origen:</Typography>
+                                                                <Typography ref={refs[4]} style={{ marginBottom: theme.spacing(1) }} variant='body1'>Origen:</Typography>
                                                                 <TextField
                                                                     size='small'
                                                                     variant='outlined'
@@ -705,7 +737,7 @@ function Gastos(props) {
                                                                 />
                                                             </Grid>
                                                             <Grid item xs>
-                                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Destino:</Typography>
+                                                                <Typography ref={refs[5]} style={{ marginBottom: theme.spacing(1) }} variant='body1'>Destino:</Typography>
                                                                 <TextField
                                                                     size='small'
                                                                     variant='outlined'
@@ -720,7 +752,7 @@ function Gastos(props) {
                                                         <Collapse in={!(transportType === 'Urbano' || transportType === 'Taxi')}>
                                                             <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Origen:</Typography>
                                                             <Grid item xs style={{ marginBottom: theme.spacing(1), paddingLeft: theme.spacing(2), paddingRight: theme.spacing(2) }}>
-                                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Departamento:</Typography>
+                                                                <Typography ref={refs[19]} style={{ marginBottom: theme.spacing(1) }} variant='body1'>Departamento:</Typography>
                                                                 <Autocomplete
                                                                     value={department1}
                                                                     onChange={(event, value) => { setDepartment1(value); setMunicipality1(null); errors[2] = false; setErrors([...errors]); setShowError(false) }}
@@ -739,7 +771,7 @@ function Gastos(props) {
                                                                 />
                                                             </Grid>
                                                             <Grid item xs style={{ marginBottom: theme.spacing(1), paddingLeft: theme.spacing(2), paddingRight: theme.spacing(2) }}>
-                                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Municipio:</Typography>
+                                                                <Typography ref={refs[20]} style={{ marginBottom: theme.spacing(1) }} variant='body1'>Municipio:</Typography>
                                                                 <Autocomplete
                                                                     disabled={!department1}
                                                                     value={municipality1}
@@ -760,7 +792,7 @@ function Gastos(props) {
                                                             </Grid>
                                                             <Typography style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(1) }} variant='body1'>Destino:</Typography>
                                                             <Grid item xs style={{ marginBottom: theme.spacing(1), paddingLeft: theme.spacing(2), paddingRight: theme.spacing(2) }}>
-                                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Departamento:</Typography>
+                                                                <Typography ref={refs[6]} style={{ marginBottom: theme.spacing(1) }} variant='body1'>Departamento:</Typography>
                                                                 <Autocomplete
                                                                     value={department2}
                                                                     onChange={(event, value) => { setDepartment2(value); setMunicipality2(null); errors[6] = false; setErrors([...errors]); setShowError(false) }}
@@ -779,7 +811,7 @@ function Gastos(props) {
                                                                 />
                                                             </Grid>
                                                             <Grid item xs style={{ marginBottom: theme.spacing(1), paddingLeft: theme.spacing(2), paddingRight: theme.spacing(2) }}>
-                                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Municipio:</Typography>
+                                                                <Typography ref={refs[7]} style={{ marginBottom: theme.spacing(1) }} variant='body1'>Municipio:</Typography>
                                                                 <Autocomplete
                                                                     disabled={!department2}
                                                                     value={municipality2}
@@ -804,8 +836,9 @@ function Gastos(props) {
                                                 <Divider style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }} />
                                             </Collapse>
                                             <Grid item xs>
-                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Valor del gasto:</Typography>
+                                                <Typography ref={refs[8]} style={{ marginBottom: theme.spacing(1) }} variant='body1'>Valor del gasto:</Typography>
                                                 <CurrencyTextField
+                                                    modifyValueOnWheel={false}
                                                     size='small'
                                                     variant='outlined'
                                                     currencySymbol='$'
@@ -823,7 +856,7 @@ function Gastos(props) {
                                             </Grid>
                                             <Divider style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }} />
                                             <Grid item xs>
-                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Descripción del gasto:</Typography>
+                                                <Typography ref={refs[9]} style={{ marginBottom: theme.spacing(1) }} variant='body1'>Descripción del gasto:</Typography>
                                                 <TextField
                                                     size='small'
                                                     variant='outlined'
@@ -852,7 +885,7 @@ function Gastos(props) {
                                             justify='center'
                                         >
                                             <Grid item xs>
-                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Nombre o razón social:</Typography>
+                                                <Typography ref={refs[10]} style={{ marginBottom: theme.spacing(1) }} variant='body1'>Nombre o razón social:</Typography>
                                                 <TextField
                                                     size='small'
                                                     variant='outlined'
@@ -865,7 +898,7 @@ function Gastos(props) {
                                             </Grid>
                                             <Divider style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }} />
                                             <Grid item xs>
-                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Cédula o NIT:</Typography>
+                                                <Typography ref={refs[11]} style={{ marginBottom: theme.spacing(1) }} variant='body1'>Cédula o NIT:</Typography>
                                                 <TextField
                                                     size='small'
                                                     variant='outlined'
@@ -879,7 +912,7 @@ function Gastos(props) {
                                             <Divider style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }} />
                                             <Collapse in={type !== 2}>
                                                 <Grid item xs>
-                                                    <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Dirección:</Typography>
+                                                    <Typography ref={refs[12]} style={{ marginBottom: theme.spacing(1) }} variant='body1'>Dirección:</Typography>
                                                     <TextField
                                                         size='small'
                                                         variant='outlined'
@@ -893,7 +926,7 @@ function Gastos(props) {
                                                 <Divider style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }} />
                                             </Collapse>
                                             <Grid item xs>
-                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Teléfono:</Typography>
+                                                <Typography ref={refs[13]} style={{ marginBottom: theme.spacing(1) }} variant='body1'>Teléfono:</Typography>
                                                 <TextField
                                                     size='small'
                                                     variant='outlined'
@@ -907,7 +940,7 @@ function Gastos(props) {
                                             <Divider style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }} />
                                             <Collapse in={transportType === 'Taxi'}>
                                                 <Grid item xs>
-                                                    <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Placa del vehículo:</Typography>
+                                                    <Typography ref={refs[14]} style={{ marginBottom: theme.spacing(1) }} variant='body1'>Placa del vehículo:</Typography>
                                                     <TextField
                                                         size='small'
                                                         variant='outlined'
@@ -921,7 +954,7 @@ function Gastos(props) {
                                                 <Divider style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }} />
                                             </Collapse>
                                             <Grid item xs>
-                                                <Typography style={{ marginBottom: theme.spacing(1) }} variant='body1'>Ciudad o municipio:</Typography>
+                                                <Typography ref={refs[15]} style={{ marginBottom: theme.spacing(1) }} variant='body1'>Ciudad o municipio:</Typography>
                                                 <Autocomplete
                                                     value={city}
                                                     onChange={(event, value) => { setCity(value); errors[15] = false; setErrors([...errors]); setShowError(false) }}
@@ -966,7 +999,7 @@ function Gastos(props) {
                                                         </Button>
                                                     </Grid>
                                                     <Grid item>
-                                                        <Typography color={errors[16] ? 'error' : 'inherit'} variant='body2'>{file ? file.name : 'Ningún archivo cargado'}</Typography>
+                                                        <Typography ref={refs[16]} color={errors[16] ? 'error' : 'inherit'} variant='body2'>{file ? file.name : 'Ningún archivo cargado'}</Typography>
                                                     </Grid>
                                                     <input
                                                         type='file'
@@ -990,7 +1023,7 @@ function Gastos(props) {
                                                     </Button>
                                                     </Grid>
                                                     <Grid item>
-                                                        <Typography color={errors[17] ? 'error' : 'inherit'} variant='body2'>{file2 ? file2.name : 'Ningún archivo cargado'}</Typography>
+                                                        <Typography ref={refs[17]} color={errors[17] ? 'error' : 'inherit'} variant='body2'>{file2 ? file2.name : 'Ningún archivo cargado'}</Typography>
                                                     </Grid>
                                                     <input
                                                         type='file'
@@ -1015,7 +1048,7 @@ function Gastos(props) {
                                                             </Button>
                                                         </Grid>
                                                         <Grid item>
-                                                            <Typography color={errors[18] ? 'error' : 'inherit'} variant='body2'>{file3 ? file3.name : 'Ningún archivo cargado'}</Typography>
+                                                            <Typography ref={refs[18]} color={errors[18] ? 'error' : 'inherit'} variant='body2'>{file3 ? file3.name : 'Ningún archivo cargado'}</Typography>
                                                         </Grid>
                                                         <input
                                                             type='file'
