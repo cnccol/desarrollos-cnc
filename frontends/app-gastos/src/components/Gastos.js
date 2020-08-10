@@ -329,32 +329,44 @@ function Gastos(props) {
                 'destino_departamento': department2 === null ? '' : department2
             })
         })
-        res
-            .json()
-            .then(d => {
+            .catch(error => {
                 setShowBackdrop(false);
-                if (d['cedula']) {
-                    setShowSuccess(true);
-                    clearTripDescription();
-                    clearExpensiveInformation();
-                    clearBeneficiaryInformation();
-                    window.scrollTo(0, 0);
-                }
-                else if (d['error'] === 'Invalid token') {
-                    setAuth(false);
-                    clearTripDescription();
-                    clearExpensiveInformation();
-                    clearBeneficiaryInformation()
-                    setShowError(true);
-                    setMessageError('Tu sesión expiró, inicia nuevamente');
-                    window.scrollTo(0, 0);
-                }
-                else {
-                    setShowError(true);
-                    setMessageError('Los datos son incorrectos');
-                    window.scrollTo(0, 0);
-                }
+                setAuth(false);
+                clearTripDescription();
+                clearExpensiveInformation();
+                clearBeneficiaryInformation();
+                setErrorFile(true);
+                setMessageError2('Tu sesión expiró, inicia sesión nuevamente');
+                window.scrollTo(0, 0);
             })
+        if (res !== undefined) {
+            res
+                .json()
+                .then(d => {
+                    setShowBackdrop(false);
+                    if (d['cedula']) {
+                        setShowSuccess(true);
+                        clearTripDescription();
+                        clearExpensiveInformation();
+                        clearBeneficiaryInformation();
+                        window.scrollTo(0, 0);
+                    }
+                    else if (d['error'] === 'Invalid token') {
+                        setAuth(false);
+                        clearTripDescription();
+                        clearExpensiveInformation();
+                        clearBeneficiaryInformation()
+                        setShowError(true);
+                        setMessageError('Tu sesión expiró, inicia nuevamente');
+                        window.scrollTo(0, 0);
+                    }
+                    else {
+                        setShowError(true);
+                        setMessageError('Los datos son incorrectos');
+                        window.scrollTo(0, 0);
+                    }
+                })
+        }
     }
 
     function clearTripDescription() {
