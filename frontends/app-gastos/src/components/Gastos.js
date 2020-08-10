@@ -411,7 +411,7 @@ function Gastos(props) {
         setPlate('');
         setCity(null);
         setFile3(null);
-        setBase64_2('');
+        setBase64_3('');
         errors[10] = false;
         errors[11] = false;
         errors[12] = false;
