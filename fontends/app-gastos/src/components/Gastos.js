@@ -307,7 +307,8 @@ function Gastos(props) {
                     setShowSuccess(true);
                     clearTripDescription();
                     clearExpensiveInformation();
-                    clearBeneficiaryInformation()
+                    clearBeneficiaryInformation();
+                    window.scrollTo(0, 0);
                 }
                 else if (d['error'] === 'Invalid token') {
                     setAuth(false);
