@@ -166,3 +166,5 @@ packages/react-devtools-shell/dist
 
 *.ini
 config.py
+
+*migrations/

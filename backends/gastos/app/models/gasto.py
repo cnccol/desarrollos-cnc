@@ -15,6 +15,7 @@ class GastoModel(db.Model):
     tipo = db.Column(db.Integer, nullable=False)
     valor = db.Column(db.Integer, nullable=False)
     descripcion = db.Column(db.String(255), nullable=False)
+    centro = db.Column(db.String(255), nullable=False)
 
     """
         datos del beneficiario
@@ -50,7 +51,7 @@ class GastoModel(db.Model):
     """
     aprobado = db.Column(db.Boolean, default=False, nullable=False)
 
-    def __init__(self, cedula, fecha, tipo, valor, descripcion,
+    def __init__(self, cedula, fecha, tipo, valor, descripcion,centro,
         identificacion, documento, origen, destino, medio, beneficiario_ciudad,
         beneficiario_documento, beneficiario_direccion, beneficiario_nombre,
         beneficiario_placa, beneficiario_telefono, foto_planilla, origen_ciudad,
@@ -66,6 +67,8 @@ class GastoModel(db.Model):
         self.tipo = tipo
         self.valor = valor
         self.descripcion = descripcion
+        self.centro = centro
+
 
         """
             datos del beneficiario
@@ -103,6 +106,7 @@ class GastoModel(db.Model):
             'fecha_subido': self.fecha_subido.strftime("%Y-%m-%d"),
             'valor': self.valor,
             'descripcion': self.descripcion,
+            'centro': self.centro,
             'identificacion': self.identificacion,
             'documento': self.documento,
             'origen': self.origen,
