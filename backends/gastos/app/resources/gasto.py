@@ -19,6 +19,7 @@ class AddGasto(Resource):
     parser.add_argument('tipo', type=int, required=True, help='un numero en el rango [1,3]')
     parser.add_argument('valor', type=int, required=True, help='This field cannot be left blank')
     parser.add_argument('descripcion', type=str, required=True, help='texto no vacio')
+    parser.add_argument('centro', type=str, required=True, help='texto no vacio')
     parser.add_argument('identificacion', type=str, required=True, help='texto base64')
     parser.add_argument('documento', type=str, required=True, help='texto base64')
     parser.add_argument('origen', type=str, required=True, help='texto no nulo')
