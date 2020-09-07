@@ -1,7 +1,7 @@
 import React from 'react';
 import { createMuiTheme, responsiveFontSizes, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Gastos from './components/Gastos'
+import Gastos from './app-view/Gastos';
 
 let theme = createMuiTheme({
   palette: {
