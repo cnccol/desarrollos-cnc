@@ -66,6 +66,10 @@ function Sesion(props) {
                             label='Usuario'
                             value={user}
                             onChange={(e) => { setUser(e.target.value); errors[0] = false; setErrors([...errors]); setShowError(false) }}
+                            onKeyPress={(e) => {
+                                if (e.key === 'Enter')
+                                    validateLogin();
+                            }}
                             error={errors[0]}
                             helperText={errors[0] ? 'Este campo no puede estar vacío' : null}
                         />
@@ -80,6 +84,10 @@ function Sesion(props) {
                             label='Contraseña'
                             value={password}
                             onChange={(e) => { setPassword(e.target.value); errors[1] = false; setErrors([...errors]); setShowError(false) }}
+                            onKeyPress={(e) => {
+                                if (e.key === 'Enter')
+                                    validateLogin();
+                            }}
                             error={errors[1]}
                             helperText={errors[1] ? 'Este campo no puede estar vacío' : null}
                         />

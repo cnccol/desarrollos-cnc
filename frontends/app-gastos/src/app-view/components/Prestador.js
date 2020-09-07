@@ -18,7 +18,7 @@ function Prestador(props) {
     const setShowError = props.setShowError;
 
     const name = props.name;
-    const setName = props.name;
+    const setName = props.setName;
     const id = props.id;
     const setId = props.setId;
     const address = props.address;

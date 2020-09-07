@@ -64,7 +64,7 @@ function Soporte(props) {
                                 type='file'
                                 ref={hiddenFileInput}
                                 style={{ display: 'none' }}
-                                onChange={(e) => Base64(e.target.files[0], setFile, setBase64_1, 16)}
+                                onChange={(e) => { Base64(e.target.files[0], setFile, setBase64_1, 16); e.target.value = null }}
                             />
                         </Grid>
                     </Grid>
@@ -88,7 +88,7 @@ function Soporte(props) {
                                 type='file'
                                 ref={hiddenFileInput2}
                                 style={{ display: 'none' }}
-                                onChange={(e) => Base64(e.target.files[0], setFile2, setBase64_2, 17)}
+                                onChange={(e) => { Base64(e.target.files[0], setFile2, setBase64_2, 17); e.target.value = null }}
                             />
                         </Grid>
                     </Grid>
@@ -113,7 +113,7 @@ function Soporte(props) {
                                     type='file'
                                     ref={hiddenFileInput3}
                                     style={{ display: 'none' }}
-                                    onChange={(e) => Base64(e.target.files[0], setFile3, setBase64_3, 18)}
+                                    onChange={(e) => { Base64(e.target.files[0], setFile3, setBase64_3, 18); e.target.value = null }}
                                 />
                             </Grid>
                         </Grid>

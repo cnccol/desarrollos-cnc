@@ -26,6 +26,7 @@ function Informacion(props) {
     const setErrors = props.setErrors;
     const setShowError = props.setShowError;
 
+    const costCenters = props.costCenters;
     const costCenter = props.costCenter;
     const setCostCenter = props.setCostCenter;
     const date = props.date;
@@ -83,10 +84,7 @@ function Informacion(props) {
                                 setErrors([...errors]);
                             }}
                             options={
-                                [
-                                    { key: 0, value: "CC111111" },
-                                    { key: 1, value: "CC222222" },
-                                ].map(option => option.value)
+                                costCenters.map(option => option.nombre)
                             }
                             noOptionsText='No hay coincidencias'
                             renderInput={params => (

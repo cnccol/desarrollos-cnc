@@ -73,6 +73,7 @@ function Transporte(props) {
                 <Grid item xs>
                     <Autocomplete
                         value={transportType}
+                        disableClearable
                         onChange={(event, value) => {
                             if (value !== null) {
                                 clearTripDescription();

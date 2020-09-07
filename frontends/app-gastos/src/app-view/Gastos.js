@@ -30,10 +30,12 @@ import Menu from './components/Menu';
 import Informacion from './components/Informacion';
 import Prestador from './components/Prestador';
 import Soporte from './components/Soporte';
+import Copyright from './components/Copyright';
 
 const API_DEFAULT = 'http://cloud.cnccol.com:5000';
 const API_LOGIN = API_DEFAULT + '/auth';
 const API_GASTO = API_DEFAULT + '/gasto';
+const API_CENTROS = API_DEFAULT + '/centros';
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -69,6 +71,8 @@ function Gastos(props) {
     const [password, setPassword] = useState('');
 
     const [addExpense, changeAddExpense] = useState(false);
+
+    const [costCenters, setCostCenters] = useState([]);
 
     const [costCenter, setCostCenter] = useState(null);
     const [date, setDate] = useState(new Date());
@@ -144,6 +148,7 @@ function Gastos(props) {
                     setAccessToken(d['access_token']);
                     setAuth(true);
                     setPassword('');
+                    fetchCentros(d['access_token']);
                 }
                 else {
                     setShowError(true);
@@ -151,6 +156,15 @@ function Gastos(props) {
                     window.scrollTo(0, 0);
                 }
             })
+    }
+
+    async function fetchCentros(accessToken) {
+        const res = await fetch(API_CENTROS, {
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + accessToken },
+        });
+        res
+            .json()
+            .then(res => setCostCenters(res['centros']));
     }
 
     function validateSend() {
@@ -283,6 +297,7 @@ function Gastos(props) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + accessToken },
             body: JSON.stringify({
+                'centro': costCenter,
                 'cedula': user,
                 'fecha': format(date, 'yyyy-MM-dd'),
                 'tipo': type + 1,
@@ -323,6 +338,7 @@ function Gastos(props) {
                     setShowBackdrop(false);
                     if (d['cedula']) {
                         setShowSuccess(true);
+                        //changeAddExpense(false);
                         clearTripDescription();
                         clearExpensiveInformation();
                         clearBeneficiaryInformation();
@@ -507,6 +523,7 @@ function Gastos(props) {
                                         errors={errors}
                                         setErrors={setErrors}
                                         setShowError={setShowError}
+                                        costCenters={costCenters}
                                         costCenter={costCenter}
                                         setCostCenter={setCostCenter}
                                         date={date}
@@ -596,6 +613,7 @@ function Gastos(props) {
                             </Container>
 
                 }
+                <Copyright />
                 <Backdrop className={classes.backdrop} open={showBackdrop}>
                     <CircularProgress color='inherit' />
                 </Backdrop>
