@@ -109,7 +109,7 @@ function Informacion(props) {
                                 format="EEEE, dd 'de' MMMM 'del' yyyy"
                                 fullWidth={true}
                                 disableToolbar={true}
-                                minDate={(new Date()).setDate((new Date()).getDate() - 7)}
+                                minDate={(new Date()).setDate((new Date()).getDate() - 30)}
                                 disableFuture={true}
                                 autoOk={true}
                                 value={date}
